@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WeMart</string>
+    <string name="title_activity_main">WeMart</string>
+    <string name="package_name">com.wemart.app</string>
+    <string name="custom_url_scheme">com.wemart.app</string>
+</resources>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c6944"/>
+      <stop offset="100%" stop-color="#1b452c"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5d485"/>
+      <stop offset="100%" stop-color="#c29a50"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#0e2316" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Rounded Canvas -->
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+
+  <!-- Subtle ambient inner glow ring -->
+  <rect x="16" y="16" width="480" height="480" rx="114" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="4"/>
+
+  <!-- Main Shopping Bag / Storefront Symbol -->
+  <g filter="url(#shadow)" transform="translate(106, 100)">
+    <!-- Shop Awning / Roof -->
+    <path d="M150 0 C70 0, 30 50, 20 85 L280 85 C270 50, 230 0, 150 0 Z" fill="url(#accent)"/>
+
+    <!-- Bag / Store Body -->
+    <path d="M25 95 L40 280 C42 298, 56 312, 75 312 L225 312 C244 312, 258 298, 260 280 L275 95 Z" fill="#ffffff"/>
+
+    <!-- Handle of the Bag -->
+    <path d="M100 95 V65 C100 40, 120 25, 150 25 C180 25, 200 40, 200 65 V95" fill="none" stroke="#24573a" stroke-width="18" stroke-linecap="round"/>
+
+    <!-- Local / Heart Badge on Bag -->
+    <circle cx="150" cy="180" r="42" fill="#edf3e5"/>
+    <path d="M150 162 C150 162 135 145 124 156 C112 168 122 186 150 206 C178 186 188 168 176 156 C165 145 150 162 150 162 Z" fill="#285c3c"/>
+
+    <!-- Groceries / Fresh Leaf Accent -->
+    <path d="M205 130 C220 120, 235 125, 240 145 C240 160, 225 170, 210 165 C205 155, 202 140, 205 130 Z" fill="#71a94e"/>
+  </g>
+</svg>
