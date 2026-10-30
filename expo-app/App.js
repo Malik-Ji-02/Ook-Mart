@@ -14,7 +14,7 @@ import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 
 // Default to Mac local network IP where Vite server is running
-const DEFAULT_URL = 'http://10.6.6.125:8443';
+const DEFAULT_URL = 'http://192.168.31.179:8443';
 
 export default function App() {
   const webViewRef = useRef(null);
@@ -174,7 +174,7 @@ export default function App() {
         {error ? (
           <View style={styles.errorContainer}>
             <View style={styles.errorCard}>
-              <Text style={styles.errorTitle}>WeMart (ApnaMarket)</Text>
+              <Text style={styles.errorTitle}>Ook Mart</Text>
               <Text style={styles.errorMessage}>
                 Could not connect to the live server at:
               </Text>
@@ -220,7 +220,7 @@ export default function App() {
             renderLoading={() => (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#285c3c" />
-                <Text style={styles.loadingText}>Opening WeMart...</Text>
+                <Text style={styles.loadingText}>Opening Ook Mart...</Text>
               </View>
             )}
           />

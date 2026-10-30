@@ -339,3 +339,113 @@ footer>.footer-brand{display:flex;font-size:9px}
 .quick-sector-btn b{font-size:11px;color:#275736}
 .quick-sector-btn small{font-size:9px;color:#809272;margin-top:2px}
 
+/* ==========================================================================
+   Ook Mart Branding & Smart Cart Button Styling
+   ========================================================================== */
+.brand-mascot-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
+.mobile-mascot-img {
+  width: 23px;
+  height: 23px;
+  object-fit: contain;
+  display: block;
+}
+
+.sidebar-mascot-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: inline-block;
+  margin-right: -2px;
+}
+
+.pill-mascot-img {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.smart-strip-mascot {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(66, 108, 54, 0.15));
+  transition: transform 0.25s ease;
+}
+
+.smart-strip:hover .smart-strip-mascot {
+  transform: scale(1.1) rotate(-4deg);
+}
+
+.btn-smart-cart {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.btn-mascot-inline {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.btn-mascot-inline-white {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.assistant-fab-mascot {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* Floating Center Smart Cart Navigation Button */
+.mobile-bottom-nav .smart-tab > span {
+  color: #3b622e;
+  background: linear-gradient(135deg, #f4f8ed 0%, #e7f0dc 100%);
+  border: 1.5px solid #c9dcb9;
+  padding: 6px 8px;
+  border-radius: 14px;
+  margin-top: -18px;
+  box-shadow: 0 4px 14px rgba(40, 92, 60, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.smart-cart-nav-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mobile-bottom-nav .smart-tab:hover > span,
+.mobile-bottom-nav .smart-tab:active > span,
+.mobile-bottom-nav .smart-tab.active > span {
+  background: linear-gradient(135deg, #eaf3df 0%, #d8ebd0 100%);
+  border-color: #92b67f;
+  box-shadow: 0 6px 18px rgba(40, 92, 60, 0.32);
+  transform: scale(1.08) translateY(-2px);
+}
+
+.mobile-bottom-nav .smart-tab:hover .smart-cart-nav-logo,
+.mobile-bottom-nav .smart-tab.active .smart-cart-nav-logo {
+  transform: scale(1.12);
+}
+
+

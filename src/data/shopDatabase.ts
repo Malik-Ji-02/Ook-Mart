@@ -154,7 +154,7 @@ export const shops: Shop[] = [
     time: '25–35',
     fee: '₹20',
     min: 199,
-    offer: 'Earn 2× Apna loyalty points on dry fruits',
+    offer: 'Earn 2× Ook Mart loyalty points on dry fruits',
     badge: 'HERITAGE STORE',
     color: 'blue',
     phone: '+91 98130 99450',

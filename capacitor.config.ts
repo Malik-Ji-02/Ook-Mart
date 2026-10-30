@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.wemart.app',
-  appName: 'WeMart',
+  appId: 'com.ookmart.app',
+  appName: 'Ook Mart',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

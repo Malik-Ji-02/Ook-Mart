@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "WeMart",
-    "slug": "wemart",
+    "name": "Ook Mart",
+    "slug": "ook-mart",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +9,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "WeMart needs your location to show nearby grocery shops in Panipat and calculate delivery distance."
+        "NSLocationWhenInUseUsageDescription": "Ook Mart needs your location to show nearby grocery shops in Panipat and calculate delivery distance."
       }
     },
     "android": {
@@ -18,7 +18,7 @@
         "ACCESS_FINE_LOCATION"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FAFBF7",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

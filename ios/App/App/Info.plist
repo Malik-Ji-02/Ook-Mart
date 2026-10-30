@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>WeMart</string>
+        <string>Ook Mart</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -65,8 +65,8 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>WeMart needs your location to calculate exact road distance and delivery estimates to Panipat grocery stores.</string>
+	<string>Ook Mart needs your location to calculate exact road distance and delivery estimates to Panipat grocery stores.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>WeMart needs your location to provide real-time distance and delivery tracking.</string>
+	<string>Ook Mart needs your location to provide real-time distance and delivery tracking.</string>
 </dict>
 </plist>
