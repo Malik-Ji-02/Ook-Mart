@@ -14,7 +14,7 @@ import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 
 // Default to Mac local network IP where Vite server is running
-const DEFAULT_URL = 'http://192.168.31.179:8443';
+const DEFAULT_URL = 'http://10.6.6.125:8443';
 
 export default function App() {
   const webViewRef = useRef(null);
