@@ -8,6 +8,7 @@ import {
   BackHandler,
   Platform,
   SafeAreaView,
+  StatusBar as RNStatusBar,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
@@ -151,7 +152,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="light" backgroundColor="#285c3c" />
+      <StatusBar style="dark" backgroundColor="#fffefb" translucent={false} />
       <View style={styles.container}>
         {/* Permission Request Header Bar for Expo Mobile */}
         {permissionStatus !== 'granted' && (
@@ -233,7 +234,8 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#285c3c',
+    backgroundColor: '#fffefb',
+    paddingTop: Platform.OS === 'android' ? (RNStatusBar.currentHeight || 28) : 0,
   },
   container: {
     flex: 1,
