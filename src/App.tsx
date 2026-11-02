@@ -1,3 +1,5 @@
+import DeliveryRouteMap from './DeliveryRouteMap';
+import DeliveryEarnings from './DeliveryEarnings';
 import { useState, useEffect, useRef } from 'react';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -63,6 +65,8 @@ function Icon({name, size=20}: {name:string;size?:number}) {
  navigation:<polygon points="3 11 22 2 13 21 11 13 3 11"/>,
  locate:<><circle cx="12" cy="12" r="10"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/><circle cx="12" cy="12" r="3"/></>,
  phone:<><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></>,
+  wallet:<><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 1-1 1v2a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6"/><circle cx="18" cy="14" r="1"/></>,
+  file:<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>,
  };
  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">{paths[name]||paths.bag}</svg>;
 }
@@ -86,6 +90,7 @@ export default function App(){
  const [deliveryOnline, setDeliveryOnline] = useState(true);
  const [pickedUpDeliveries, setPickedUpDeliveries] = useState<string[]>([]);
  const [completedDeliveries, setCompletedDeliveries] = useState<string[]>([]);
+ const [activeDeliveryId, setActiveDeliveryId] = useState<string | null>('1042');
 
  function loginWithRole(rKey: 'customer' | 'shopkeeper' | 'delivery guy' | 'wholesale shopkeeper', customName?: string) {
    triggerHaptic('success');
@@ -210,11 +215,32 @@ export default function App(){
      } else if (h === '#orders') {
        setPage('My orders');
      } else if (h === '#delivery') {
-       setPage('Discover');
        setRole('Delivery Guy');
-     } else if (h === '#wholesale') {
+       setAuthRole('delivery guy');
+       setAuthName('Vikas Kumar');
        setPage('Discover');
+     } else if (h === '#route' || h === '#delivery-route' || h === '#map') {
+       setRole('Delivery Guy');
+       setAuthRole('delivery guy');
+       setAuthName('Vikas Kumar');
+       setPage('Route');
+     } else if (h === '#earnings' || h === '#delivery-earnings') {
+       setRole('Delivery Guy');
+       setAuthRole('delivery guy');
+       setAuthName('Vikas Kumar');
+       setPage('Earnings');
+     } else if (h === '#delivery-profile' || h === '#profile-delivery') {
+       setRole('Delivery Guy');
+       setAuthRole('delivery guy');
+       setAuthName('Vikas Kumar');
+       setPage('Account');
+     } else if (h === '#profile') {
+       setPage('Account');
+     } else if (h === '#wholesale') {
        setRole('Wholesale Shopkeeper');
+       setAuthRole('wholesale shopkeeper');
+       setAuthName('Bharat Aggarwal');
+       setPage('Discover');
      }
    }
    syncHash();
@@ -667,8 +693,8 @@ export default function App(){
        </button>
      </div>
    </div>
-   <button className="mobile-location" onClick={()=>setModal('Delivery location')}><Icon name="pin" size={16}/><span><small>DELIVERING TO HOME</small><strong>{address}</strong></span><Icon name="down" size={15}/><span className="delivery-estimate"><Icon name="clock" size={13}/>20–30 min</span></button>
-   <div className="mobile-search"><Icon name="search" size={20}/><input aria-label="Search products and shops" value={search} onChange={e=>{setSearch(e.target.value);if(e.target.value)setPage('Search')}} placeholder="Search for milk, atta, your local shop…"/>{search&&<button aria-label="Clear search" onClick={()=>setSearch('')}>×</button>}<span><Icon name="list" size={19}/><button aria-label="Open shopping lists" onClick={()=>go('Shopping lists')}/></span></div>
+   <button className="mobile-location" onClick={()=>setModal('Delivery location')}><Icon name="pin" size={16}/><span><small>{role === 'Delivery Guy' ? 'ACTIVE DELIVERY ZONE' : role === 'Shopkeeper' || role === 'Wholesale Shopkeeper' ? 'STORE LOCATION' : 'DELIVERING TO HOME'}</small><strong>{address}</strong></span><Icon name="down" size={15}/><span className="delivery-estimate">{role === 'Delivery Guy' ? <><span className={'fleet-online-dot ' + (deliveryOnline ? 'active' : '')} style={{display:'inline-block',marginRight:'5px'}}/>{deliveryOnline ? 'Duty Online' : 'Offline'}</> : <><Icon name="clock" size={13}/>20–30 min</>}</span></button>
+   <div className="mobile-search"><Icon name="search" size={20}/><input aria-label="Search products and shops" value={search} onChange={e=>{setSearch(e.target.value);if(e.target.value)setPage('Search')}} placeholder={role === 'Delivery Guy' ? 'Search pickup shop, route or order…' : 'Search for milk, atta, your local shop…'}/>{search&&<button aria-label="Clear search" onClick={()=>setSearch('')}>×</button>}<span><Icon name="list" size={19}/><button aria-label="Open shopping lists" onClick={()=>go('Shopping lists')}/></span></div>
    {!isGpsActive ? (
      <div className="location-permission-banner" onClick={requestLiveLocation}>
        <div className="lpb-icon-box"><Icon name="locate" size={20}/></div>
@@ -688,8 +714,29 @@ export default function App(){
      </div>
    )}
  </div>
- <main><div className="breadcrumb">Your neighbourhood <Icon name="chevron" size={12}/> <span>{page==='Discover'?'Discover':page}</span></div>
- {role==='Delivery Guy'&&page!=='Account' ? (
+ <main>{page !== 'Route' && <div className="breadcrumb">Your neighbourhood <Icon name="chevron" size={12}/> <span>{page==='Discover'?'Discover':page}</span></div>}
+ {role==='Delivery Guy'&&page==='Route' ? (
+  <DeliveryRouteMap
+    riderName={authName || 'Vikas Kumar'}
+    riderCoords={userLocation || { lat: 29.3955, lng: 76.9685 }}
+    activeDeliveryId={activeDeliveryId}
+    setActiveDeliveryId={setActiveDeliveryId}
+    pickedUpDeliveries={pickedUpDeliveries}
+    setPickedUpDeliveries={setPickedUpDeliveries}
+    completedDeliveries={completedDeliveries}
+    setCompletedDeliveries={setCompletedDeliveries}
+    notify={notify}
+    go={go}
+  />
+) : role==='Delivery Guy'&&page==='Earnings' ? (
+  <DeliveryEarnings
+    riderName={authName || 'Vikas Kumar'}
+    completedDeliveries={completedDeliveries}
+    deliveryOnline={deliveryOnline}
+    notify={notify}
+    go={go}
+  />
+) : role==='Delivery Guy'&&page!=='Account' ? (
   <div className="delivery-fleet-panel">
     <div className="page-heading">
       <div>
@@ -697,8 +744,8 @@ export default function App(){
         <h1>Fleet Dispatch & Active Orders</h1>
         <p>Delivery Partner: {authName || 'Vikas Kumar'} · Panipat Fleet</p>
       </div>
-      <button className="primary" onClick={() => { setCalcShop(selectedShop || shops[0]); setModal('Distance Calculator'); }}>
-        <Icon name="ruler" size={16}/> Distance Route
+      <button className="primary" onClick={() => go('Route')}>
+        <Icon name="ruler" size={16}/> View Full Route Map (Live)
       </button>
     </div>
 
@@ -720,8 +767,8 @@ export default function App(){
         <span>Today's Drops</span>
         <strong>{14 + completedDeliveries.length}</strong>
       </div>
-      <div className="fleet-stat-card">
-        <span>Earnings</span>
+      <div className="fleet-stat-card" style={{cursor: 'pointer'}} onClick={() => go('Earnings')} title="View detailed daywise and monthly earnings">
+        <span>Earnings ➜</span>
         <strong>₹{1240 + completedDeliveries.length * 45}</strong>
       </div>
       <div className="fleet-stat-card">
@@ -757,13 +804,23 @@ export default function App(){
         </div>
       </div>
       <div className="doc-actions">
+        <button 
+          className="doc-btn route-map-btn" 
+          onClick={() => {
+            setActiveDeliveryId('1042');
+            go('Route');
+            notify('🗺️ Order #OOK-1042 selected as Main Route (Green)!');
+          }}
+        >
+          🗺️ Follow Route (Green)
+        </button>
         <a 
           className="doc-btn maps" 
           href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=29.3909,76.9635`} 
           target="_blank" 
           rel="noopener noreferrer"
         >
-          <Icon name="navigation" size={14}/> GPS Navigation
+          <Icon name="navigation" size={14}/> GPS
         </a>
         <button 
           className="doc-btn status" 
@@ -808,13 +865,23 @@ export default function App(){
         </div>
       </div>
       <div className="doc-actions">
+        <button 
+          className="doc-btn route-map-btn" 
+          onClick={() => {
+            setActiveDeliveryId('1045');
+            go('Route');
+            notify('🗺️ Order #OOK-1045 selected as Main Route (Green)!');
+          }}
+        >
+          🗺️ Follow Route (Green)
+        </button>
         <a 
           className="doc-btn maps" 
           href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=29.3980,76.9750`} 
           target="_blank" 
           rel="noopener noreferrer"
         >
-          <Icon name="navigation" size={14}/> GPS Navigation
+          <Icon name="navigation" size={14}/> GPS
         </a>
         <button 
           className="doc-btn status" 
@@ -836,7 +903,7 @@ export default function App(){
 
     <div className="local-card" style={{marginTop:'4px'}}>
       <h4>Fleet Partner Vehicle</h4>
-      <p>Vehicle: <strong>{authVehicle}</strong> · Hub: <strong>Model Town, Panipat</strong></p>
+      <p>Vehicle: <strong>{authVehicle}</strong> · Area: <strong>Model Town, Panipat</strong></p>
       <button onClick={() => setModal('Switch account')}>Switch role or account <Icon name="arrow" size={14}/></button>
     </div>
   </div>
@@ -897,10 +964,515 @@ export default function App(){
  {page==='Shopping lists'&&<>{heading('A place for every little essential.','Plan your shop. Compare your list. Make it local.','Create a list',()=>setModal('Add to shopping list'))}<div className="panel"><div className="section-heading"><div><h2>Weekly essentials</h2><p>4 products · Updated today</p></div><button className="primary" onClick={()=>go('Smart Cart AI')}><span className="btn-mascot-badge"><img src="/ook-mart-logo.svg" alt="" /></span>Compare with Smart Cart <Icon name="arrow" size={16}/></button></div>{products.map(p=><div className="basket-line" key={p.name}><Icon name="check" size={16}/><strong>{p.name}</strong><span>{p.size}</span></div>)}</div></>}
  {page==='My orders'&&<>{heading('Your orders, all together.','From your neighbourhood to your doorstep.')}<div className="panel"><span className="status">{ordered?'Order confirmed':'Delivered · 18 October'}</span><div className="section-heading"><div><h2>Sharma General Store</h2><p>Order #OOK-1042 · 4 items · ₹450</p></div><button className="primary" onClick={()=>{products.forEach(p=>add(p.name));setModal('Your basket')}}>Order again <Icon name="arrow" size={16}/></button></div>{products.map(p=><div className="basket-line" key={p.name}><img src={photo(p.img,80)} alt=""/><strong>{p.name}</strong><span>₹{p.price}</span></div>)}</div></>}
  </>}
- {page==='Account'&&<section className="mobile-account"><span className="account-avatar">AS</span><h1>Your little local world.</h1><p>Ananya Sharma · {role}</p><div className="account-points"><Icon name="gift" size={24}/><div><strong>240 Ook Points</strong><small>A thank you for keeping it local.</small></div><button onClick={()=>go('Rewards & loyalty')} aria-label="View rewards"><Icon name="arrow"/></button></div><div className="account-menu">{[['heart','Favourites'],['list','Shopping lists'],['gift','Rewards & loyalty'],['bag','My orders']].map(([icon,label])=><button key={label} onClick={()=>go(label)}><Icon name={icon}/><span>{label}</span><Icon name="chevron" size={16}/></button>)}<button onClick={()=>go('Landing')}><Icon name="home"/><span>Welcome & Login Portal</span><Icon name="chevron" size={16}/></button><button onClick={()=>setModal('Switch account')}><Icon name="shop"/><span>Switch account or business role</span><Icon name="chevron" size={16}/></button><button onClick={()=>setModal('Delivery location')}><Icon name="pin"/><span>Delivery address</span><Icon name="chevron" size={16}/></button><button onClick={()=>setModal('Help & support')}><Icon name="help"/><span>Help & support</span><Icon name="chevron" size={16}/></button><button onClick={()=>{loginWithRole('customer');go('Landing');notify('Logged out. Welcome to Ook Mart!');}}><Icon name="logout"/><span>Log out</span><Icon name="chevron" size={16}/></button></div><p className="account-demo">Ook Mart · Interactive mobile prototype</p></section>}
+ {page==='Account'&&(
+  role === 'Delivery Guy' ? (
+    <section className="delivery-profile">
+      {/* 1. Rider Header with Hero Avatar, Identity & Duty Toggle */}
+      <div className="dp-hero-card">
+        <div className="dp-hero-top">
+          <div className="dp-avatar-wrap">
+            <span className="dp-avatar">
+              {authName ? authName.split(' ').map(n=>n[0]).slice(0,2).join('') : 'VK'}
+            </span>
+            <span className={`dp-status-badge ${deliveryOnline ? 'online' : 'offline'}`} />
+          </div>
+          <div className="dp-identity">
+            <div className="dp-title-row">
+              <h1>{authName || 'Vikas Kumar'}</h1>
+              <span className="dp-verified-badge"><Icon name="shield" size={12}/> Verified</span>
+            </div>
+            <p className="dp-sub">
+              <span>🛵 Delivery Partner</span>
+              <span className="dp-sep">•</span>
+              <span>ID: #OOK-DEL-8821</span>
+            </p>
+            <div className="dp-hub-tag">
+              <Icon name="pin" size={12}/> Model Town & Sector 11, Panipat
+            </div>
+          </div>
+        </div>
+
+        {/* Live Duty Switch */}
+        <div className="dp-duty-toggle-box">
+          <div className="dp-duty-info">
+            <span className={`dp-duty-dot ${deliveryOnline ? 'active' : ''}`} />
+            <div>
+              <strong>{deliveryOnline ? 'Duty Active: Online' : 'Duty Inactive: Offline'}</strong>
+              <small>{deliveryOnline ? 'Receiving doorstep pickup & drop requests' : 'You are currently on break / offline'}</small>
+            </div>
+          </div>
+          <button 
+            type="button"
+            className={`dp-duty-btn ${deliveryOnline ? 'online' : 'offline'}`}
+            onClick={() => {
+              const next = !deliveryOnline;
+              setDeliveryOnline(next);
+              notify(next ? '🟢 You are now Online & ready for deliveries!' : '⏸️ You went Offline. Have a good break!');
+            }}
+          >
+            {deliveryOnline ? 'GO OFFLINE' : 'GO ONLINE'}
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Key Performance Scorecard */}
+      <div className="dp-scorecard">
+        <div className="dp-score-item">
+          <div className="dp-score-val gold">
+            <span>★</span> 4.92
+          </div>
+          <div className="dp-score-lbl">Rating (348)</div>
+        </div>
+        <div className="dp-score-item">
+          <div className="dp-score-val">
+            98.4%
+          </div>
+          <div className="dp-score-lbl">On-Time Rate</div>
+        </div>
+        <div className="dp-score-item">
+          <div className="dp-score-val">
+            {14 + completedDeliveries.length}
+          </div>
+          <div className="dp-score-lbl">Today's Drops</div>
+        </div>
+        <div className="dp-score-item">
+          <div className="dp-score-val">
+            842
+          </div>
+          <div className="dp-score-lbl">All Deliveries</div>
+        </div>
+      </div>
+
+      {/* 3. Earnings & Wallet Hub */}
+      <div className="dp-section-card dp-wallet-card">
+        <div className="dp-card-head">
+          <div className="dp-card-title">
+            <Icon name="chart" size={17}/>
+            <span>Earnings & Payout Wallet</span>
+          </div>
+          <span className="dp-pill green">Instant UPI Ready</span>
+        </div>
+
+        <div className="dp-earnings-highlight">
+          <div className="dp-earnings-main">
+            <small>TODAY'S EARNINGS</small>
+            <h2>₹{1240 + completedDeliveries.length * 45}</h2>
+            <span className="dp-breakdown-sub">Base pay ₹980 + Distance bonus ₹170 + Tips ₹{90 + completedDeliveries.length * 45}</span>
+          </div>
+          <button 
+            type="button" 
+            className="dp-withdraw-btn"
+            onClick={() => notify(`🎉 Instant UPI Payout of ₹4,890 sent to ${authName || 'Vikas'}'s linked HDFC Bank account!`)}
+          >
+            Withdraw ₹4,890
+          </button>
+        </div>
+
+        <div className="dp-wallet-grid">
+          <div className="dp-wallet-tile">
+            <small>Pending Weekly Payout</small>
+            <strong>₹4,890</strong>
+            <span>Auto-transfers every Tuesday</span>
+          </div>
+          <div className="dp-wallet-tile">
+            <small>Floating Cash (COD)</small>
+            <strong className="text-amber">₹450</strong>
+            <span>Collected from Order #1045</span>
+          </div>
+        </div>
+
+        <div className="dp-bank-row">
+          <div className="dp-bank-info">
+            <Icon name="check" size={14}/>
+            <span>Linked: <b>HDFC Bank (***4821)</b> · vikas.kumar@okhdfcbank</span>
+          </div>
+          <button 
+            type="button" 
+            className="dp-text-link"
+            onClick={() => notify('Bank account details are verified by Ook Mart Fleet.')}
+          >
+            Edit UPI
+          </button>
+        </div>
+
+        <div style={{marginTop: '10px'}}>
+          <button 
+            type="button" 
+            className="primary wide" 
+            style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px'}}
+            onClick={() => go('Earnings')}
+          >
+            <Icon name="chart" size={16}/>
+            <span>View Daywise & Monthly Earnings ➜</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Vehicle & KYC Documentation */}
+      <div className="dp-section-card">
+        <div className="dp-card-head">
+          <div className="dp-card-title">
+            <Icon name="bike" size={17}/>
+            <span>Vehicle & Driving Compliance</span>
+          </div>
+          <span className="dp-pill blue">100% Verified</span>
+        </div>
+
+        <div className="dp-doc-list">
+          <div className="dp-doc-item">
+            <div className="dp-doc-left">
+              <span className="dp-doc-icon"><Icon name="bike" size={16}/></span>
+              <div>
+                <strong>{authVehicle || 'Hero Splendor Plus (HR-06-AB-1234)'}</strong>
+                <small>Assigned delivery two-wheeler · White & Blue</small>
+              </div>
+            </div>
+            <span className="dp-status-tag verified">Verified</span>
+          </div>
+
+          <div className="dp-doc-item">
+            <div className="dp-doc-left">
+              <span className="dp-doc-icon"><Icon name="shield" size={16}/></span>
+              <div>
+                <strong>Driving License: DL-HR06-2021004921</strong>
+                <small>Valid till 28 Nov 2036 · Transport / Motorcycle</small>
+              </div>
+            </div>
+            <span className="dp-status-tag verified">Active</span>
+          </div>
+
+          <div className="dp-doc-item">
+            <div className="dp-doc-left">
+              <span className="dp-doc-icon"><Icon name="check" size={16}/></span>
+              <div>
+                <strong>Commercial Insurance & Pollution (PUC)</strong>
+                <small>National Insurance #NIC-9924-M · Valid till Nov 2027</small>
+              </div>
+            </div>
+            <span className="dp-status-tag verified">Valid</span>
+          </div>
+
+          <div className="dp-doc-item">
+            <div className="dp-doc-left">
+              <span className="dp-doc-icon"><Icon name="profile" size={16}/></span>
+              <div>
+                <strong>Identity & Background Check</strong>
+                <small>Aadhaar UIDAI linked · Police verification cleared</small>
+              </div>
+            </div>
+            <span className="dp-status-tag verified">Passed</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Safety Gear & Fleet Kit */}
+      <div className="dp-section-card">
+        <div className="dp-card-head">
+          <div className="dp-card-title">
+            <Icon name="shield" size={17}/>
+            <span>Safety Gear & Insurance Cover</span>
+          </div>
+          <span className="dp-pill green">Inspected</span>
+        </div>
+
+        <div className="dp-gear-grid">
+          <div className="dp-gear-item">
+            <span className="dp-gear-icon">🎒</span>
+            <div className="dp-gear-info">
+              <strong>Ook Thermal Box #TB-884</strong>
+              <small>Food-grade insulation</small>
+            </div>
+            <span className="dp-gear-check">✓</span>
+          </div>
+          <div className="dp-gear-item">
+            <span className="dp-gear-icon">🧥</span>
+            <div className="dp-gear-info">
+              <strong>Rain Poncho & Night Vest</strong>
+              <small>High-vis neon reflective</small>
+            </div>
+            <span className="dp-gear-check">✓</span>
+          </div>
+          <div className="dp-gear-item">
+            <span className="dp-gear-icon">🛡️</span>
+            <div className="dp-gear-info">
+              <strong>₹5 Lakh Accidental Cover</strong>
+              <small>Bharti AXA Fleet Policy</small>
+            </div>
+            <span className="dp-gear-check">✓</span>
+          </div>
+          <div className="dp-gear-item">
+            <span className="dp-gear-icon">📱</span>
+            <div className="dp-gear-info">
+              <strong>Handlebar Phone Mount</strong>
+              <small>Bike handlebar safe mount</small>
+            </div>
+            <span className="dp-gear-check">✓</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Shift & Working Zone */}
+      <div className="dp-section-card">
+        <div className="dp-card-head">
+          <div className="dp-card-title">
+            <Icon name="clock" size={17}/>
+            <span>Shift & Zone Preferences</span>
+          </div>
+          <button 
+            type="button" 
+            className="dp-text-link"
+            onClick={() => notify('Operating zone set to Model Town & Sector 11 Panipat.')}
+          >
+            Manage
+          </button>
+        </div>
+
+        <div className="dp-pref-rows">
+          <div className="dp-pref-row">
+            <span>Operating Shift</span>
+            <strong>Morning (07:30 AM – 03:30 PM)</strong>
+          </div>
+          <div className="dp-pref-row">
+            <span>Assigned Sector</span>
+            <strong>Model Town, Sector 11 & GT Road (Panipat)</strong>
+          </div>
+          <div className="dp-pref-row">
+            <span>Max Delivery Radius</span>
+            <strong>5.0 km operating radius</strong>
+          </div>
+          <div className="dp-pref-row">
+            <span>GPS Navigation Mode</span>
+            <strong>Google Maps (Two-Wheeler Route)</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* 7. Rider Actions & Support Menu */}
+      <div className="dp-menu-card">
+        <button type="button" onClick={() => go('Discover')}>
+          <Icon name="truck" size={17}/>
+          <div>
+            <strong>Active Deliveries & Dispatch Board</strong>
+            <small>View pending pickup orders and navigation</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button type="button" onClick={() => go('Route')}>
+          <Icon name="ruler" size={17}/>
+          <div>
+            <strong>Live Delivery Route Map & Navigation</strong>
+            <small>View interactive city delivery routes and live turn navigation</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button type="button" onClick={() => go('Earnings')}>
+          <Icon name="wallet" size={17}/>
+          <div>
+            <strong>Earnings & Payout Statements</strong>
+            <small>Today's earnings, daywise history & monthly totals</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <a className="dp-menu-link" href="tel:+919812044521" onClick={() => notify('Calling Panipat Fleet Dispatcher hotline...')}>
+          <Icon name="phone" size={17}/>
+          <div>
+            <strong>Fleet Manager Emergency Hotline (SOS)</strong>
+            <small>Direct phone support for order issues or accidents</small>
+          </div>
+          <span className="dp-sos-pill">SOS Call</span>
+        </a>
+
+        <button type="button" onClick={() => setModal('Switch account')}>
+          <Icon name="profile" size={17}/>
+          <div>
+            <strong>Switch Business Role / Account</strong>
+            <small>Change between Customer, Shopkeeper, Delivery</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button type="button" onClick={() => go('Landing')}>
+          <Icon name="home" size={17}/>
+          <div>
+            <strong>Welcome & Login Portal</strong>
+            <small>Return to front gateway</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button 
+          type="button" 
+          className="dp-logout-btn"
+          onClick={() => {
+            loginWithRole('customer');
+            go('Landing');
+            notify('Logged out from Delivery Partner account.');
+          }}
+        >
+          <Icon name="logout" size={17}/>
+          <div>
+            <strong>Log out of Delivery Partner Account</strong>
+            <small>End session and return to guest mode</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+      </div>
+
+      <p className="account-demo">Ook Mart Delivery Fleet Partner App · Panipat v2.4</p>
+    </section>
+  ) : role === 'Shopkeeper' || role === 'Retail Shopkeeper' || role === 'Wholesale Shopkeeper' || role === 'Wholesaler / Distributor' ? (
+    <section className="merchant-profile">
+      <div className="mp-hero-card">
+        <div className="mp-hero-top">
+          <span className="mp-avatar">
+            {role.startsWith('Whole') ? 'BA' : 'RS'}
+          </span>
+          <div className="mp-identity">
+            <div className="mp-title-row">
+              <h1>{role.startsWith('Whole') ? (authName || 'Bharat Aggarwal') : (authName || 'Ramesh Sharma')}</h1>
+              <span className="mp-verified-badge"><Icon name="shield" size={12}/> Business Verified</span>
+            </div>
+            <p className="mp-sub">
+              <span>{role.startsWith('Whole') ? '📦 Bharat Wholesale Traders' : '🏪 Sharma General Store'}</span>
+            </p>
+            <div className="mp-hub-tag">
+              <Icon name="pin" size={12}/> {role.startsWith('Whole') ? 'GT Road, Panipat · GST: 06BBBBB1111B1Z2' : 'Model Town, Panipat · GST: 06AAAAA0000A1Z5'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="dp-scorecard">
+        <div className="dp-score-item">
+          <div className="dp-score-val">₹{role.startsWith('Whole') ? '1,84,000' : '24,580'}</div>
+          <div className="dp-score-lbl">Today's Sales</div>
+        </div>
+        <div className="dp-score-item">
+          <div className="dp-score-val">{role.startsWith('Whole') ? '42' : '28'}</div>
+          <div className="dp-score-lbl">Active Orders</div>
+        </div>
+        <div className="dp-score-item">
+          <div className="dp-score-val">{role.startsWith('Whole') ? '86' : '342'}</div>
+          <div className="dp-score-lbl">Products</div>
+        </div>
+        <div className="dp-score-item">
+          <div className="dp-score-val gold"><span>★</span> 4.8</div>
+          <div className="dp-score-lbl">Rating</div>
+        </div>
+      </div>
+
+      <div className="dp-menu-card">
+        <button type="button" onClick={() => go('Discover')}>
+          <Icon name="chart" size={17}/>
+          <div>
+            <strong>Store Dashboard & Orders</strong>
+            <small>Manage inventory, orders and store revenue</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button type="button" onClick={() => setModal('Add product')}>
+          <Icon name="plus" size={17}/>
+          <div>
+            <strong>Add New Product to Catalogue</strong>
+            <small>Upload items, update prices & stock</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button type="button" onClick={() => setModal('Switch account')}>
+          <Icon name="shop" size={17}/>
+          <div>
+            <strong>Switch Business Role / Account</strong>
+            <small>Customer, Shopkeeper, Delivery Partner</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button type="button" onClick={() => go('Landing')}>
+          <Icon name="home" size={17}/>
+          <div>
+            <strong>Welcome & Login Portal</strong>
+            <small>Return to front gateway</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+
+        <button 
+          type="button" 
+          className="dp-logout-btn"
+          onClick={() => {
+            loginWithRole('customer');
+            go('Landing');
+            notify('Logged out of merchant account.');
+          }}
+        >
+          <Icon name="logout" size={17}/>
+          <div>
+            <strong>Log out of Store Account</strong>
+            <small>End session and return to guest mode</small>
+          </div>
+          <Icon name="chevron" size={16}/>
+        </button>
+      </div>
+
+      <p className="account-demo">Ook Mart Merchant Portal · Panipat v2.4</p>
+    </section>
+  ) : (
+    <section className="mobile-account">
+      <span className="account-avatar">AS</span>
+      <h1>Your little local world.</h1>
+      <p>Ananya Sharma · {role}</p>
+      <div className="account-points">
+        <Icon name="gift" size={24}/>
+        <div>
+          <strong>240 Ook Points</strong>
+          <small>A thank you for keeping it local.</small>
+        </div>
+        <button onClick={()=>go('Rewards & loyalty')} aria-label="View rewards"><Icon name="arrow"/></button>
+      </div>
+      <div className="account-menu">
+        {[['heart','Favourites'],['list','Shopping lists'],['gift','Rewards & loyalty'],['bag','My orders']].map(([icon,label])=><button key={label} onClick={()=>go(label)}><Icon name={icon}/><span>{label}</span><Icon name="chevron" size={16}/></button>)}
+        <button onClick={()=>go('Landing')}><Icon name="home"/><span>Welcome & Login Portal</span><Icon name="chevron" size={16}/></button>
+        <button onClick={()=>setModal('Switch account')}><Icon name="shop"/><span>Switch account or business role</span><Icon name="chevron" size={16}/></button>
+        <button onClick={()=>setModal('Delivery location')}><Icon name="pin"/><span>Delivery address</span><Icon name="chevron" size={16}/></button>
+        <button onClick={()=>setModal('Help & support')}><Icon name="help"/><span>Help & support</span><Icon name="chevron" size={16}/></button>
+        <button onClick={()=>{loginWithRole('customer');go('Landing');notify('Logged out. Welcome to Ook Mart!');}}><Icon name="logout"/><span>Log out</span><Icon name="chevron" size={16}/></button>
+      </div>
+      <p className="account-demo">Ook Mart · Interactive mobile prototype</p>
+    </section>
+  )
+)}
  <footer><span className="footer-brand"><Icon name="shop" size={16}/> A little local makes a big difference.</span><span>Made for your neighbourhood. Made for you.</span><span><Icon name="shield" size={14}/> Secure & trusted</span></footer></main></>)}</div>
  {page!=='Landing'&&page!=='Auth'&&count>0&&<button className="mobile-cart" onClick={()=>setModal('Your basket')}><span className="cart-count"><Icon name="bag" size={18}/>{count}</span><span><strong>{count} {count===1?'item':'items'} in your basket</strong><small>₹{total} · {total>=199?'Free delivery unlocked':'Fresh from your local shop'}</small></span><b>View basket</b><Icon name="arrow" size={17}/></button>}
- {page!=='Landing'&&page!=='Auth'&&<nav className="mobile-bottom-nav" aria-label="Main navigation">{[['home','Discover','Home'],['shop','Nearby shops','Shops'],['spark','Smart Cart AI','Smart cart'],['bag','My orders','Orders'],['profile','Account','You']].map(([icon,target,label])=><button key={target} aria-current={page===target?'page':undefined} className={(page===target?'active ':'')+(target==='Smart Cart AI'?'smart-tab':'')} onClick={()=>go(target)}><span>{target==='Smart Cart AI'?<img src="/ook-mart-logo.svg" alt="Smart Cart" className="smart-cart-nav-logo"/>:<Icon name={icon} size={22}/>}</span><small>{label}</small>{page===target&&<i/>}</button>)}</nav>}
+ {page!=='Landing'&&page!=='Auth'&&<nav className="mobile-bottom-nav" aria-label="Main navigation">{
+  (role === 'Delivery Guy' ? [
+    ['truck','Discover','Deliveries'],
+    ['ruler','Route','Map Route'],
+    ['wallet','Earnings','Earnings'],
+    ['profile','Account','Profile']
+  ] : role === 'Shopkeeper' || role === 'Wholesale Shopkeeper' ? [
+    ['chart','Discover','Dashboard'],
+    ['bag','Discover','Orders'],
+    ['shop','Nearby shops','Catalogue'],
+    ['profile','Account','Store']
+  ] : [
+    ['home','Discover','Home'],
+    ['shop','Nearby shops','Shops'],
+    ['spark','Smart Cart AI','Smart cart'],
+    ['bag','My orders','Orders'],
+    ['profile','Account','You']
+  ]).map(([icon,target,label])=><button key={label} aria-current={page===target?'page':undefined} className={(page===target?'active ':'')+(target==='Smart Cart AI'?'smart-tab':'')} onClick={()=>{
+    if (target === 'Distance Calculator') {
+      setCalcShop(selectedShop || shops[0]);
+      setModal('Distance Calculator');
+    } else {
+      go(target);
+    }
+  }}><span>{target==='Smart Cart AI'?<img src="/ook-mart-logo.svg" alt="Smart Cart" className="smart-cart-nav-logo"/>:<Icon name={icon} size={22}/>}</span><small>{label}</small>{page===target&&<i/>}</button>)}</nav>}
  {page!=='Landing'&&page!=='Auth'&&<button className="assistant-fab" onClick={()=>setModal('Your local shopping assistant')}><span className="fab-mascot-badge"><img src="/ook-mart-logo.svg" alt="" /></span><span>Ask Ook AI</span></button>}
  {toast&&<div className="toast"><Icon name="check" size={18}/>{toast}</div>}
  {modal&&<div className="modal-backdrop" onClick={()=>setModal('')}><section className="modal" onClick={e=>e.stopPropagation()}><button className="close" onClick={()=>setModal('')} aria-label="Close">×</button><span className="modal-icon"><Icon name={modal==='Your basket'?'bag':modal==='Distance Calculator'?'ruler':modal==='Delivery location'||modal==='Location Permission'?'pin':'spark'} size={26}/></span><h2>{modal}</h2>
